@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  java:
+    depends_on:
+      - arangodb
+    image: maven:latest
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      MAVEN_OPTS: -Dmaven.repo.local=/cache
+    volumes:
+      - maven-cache:/cache
+      - ./:/app
+    command: mvn -f /app/pom.xml spring-boot:run
+
+  arangodb:
+    image: arangodb:latest
+    restart: always
+    environment:
+      ARANGO_NO_AUTH: 1
+    ports:
+      - "8529:8529"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+
+volumes:
+    maven-cache: {}
